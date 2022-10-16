@@ -38,7 +38,7 @@ jobs:
 
     strategy:
       matrix:
-        build: [stable, beta, nightly]
+        build: [stable]
         include:
           - build: beta
             rust: beta
