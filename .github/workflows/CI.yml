@@ -20,7 +20,27 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Install dependencies
-        run: sudo apt-get install -y libusb-1.0-0-dev libftdi1-dev libssl-dev libudev-dev pkg-config zlib1g-dev llvm clang cmake make libprotobuf-dev protobuf-compiler
+        run: | 
+          sudo dpkg --add-architecture arm64 && \
+          sudo echo '# source urls for arm64 \n\
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
+          deb-src [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
+          deb-src [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
+          deb-src [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n # end arm64 section' >> /etc/apt/sources.list &&\
+          sudo sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list && \
+          sudo cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
+          sudo sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list&&cat /etc/apt/sources.list &&\
+          sudo cp /tmp/sources-tmp.list /etc/apt/sources.list&& echo "next"&&cat /etc/apt/sources.list && \
+          sudo apt-get -y update && \
+          sudo apt-get upgrade -y && \
+          sudo apt-get install -y --no-install-recommends \
+            curl make cmake file ca-certificates  \
+            g++ gcc-aarch64-linux-gnu g++-aarch64-linux-gnu \
+            libc6-dev-arm64-cross binutils-aarch64-linux-gnu \
+            libudev-dev libudev-dev:arm64 && \
+          sudo apt-get clean
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
@@ -44,8 +64,7 @@ jobs:
           # strip target/${{ matrix.target }}/release/rust-ci
 
           cd target/${{ matrix.target }}/release          
-          # UPDATEME: replace the string "rust-ci" with your binary's name.
-          tar czvf ../../../rust-ci-${{ matrix.target }}.tar.gz rust-ci
+          tar czvf ../../../solana-${{ matrix.target }}.tar.gz solana
           cd -
           
       - name: Publish
