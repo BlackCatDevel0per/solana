@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v1
 
       - name: Install dependencies
-        run: sudo apt-get install -y libssl-dev libudev-dev pkg-config zlib1g-dev llvm clang cmake make libprotobuf-dev protobuf-compiler
+        run: sudo apt-get install -y libusb-1.0-0-dev libftdi1-dev libssl-dev libudev-dev pkg-config zlib1g-dev llvm clang cmake make libprotobuf-dev protobuf-compiler
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
